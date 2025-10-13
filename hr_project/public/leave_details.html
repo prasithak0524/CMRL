@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Leave Application Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f7f7f7;
+        }
+        /* Top Navbar */
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 12px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar .brand {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .navbar ul li {
+            margin-left: 20px;
+        }
+        
+        .navbar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h2 {
+            margin-top: 0;
+        }
+        
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px 50px;
+            margin-bottom: 20px;
+        }
+        
+        .details p {
+            margin: 5px 0;
+            color: #444;
+        }
+        
+        .label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            background: #fceabb;
+            color: #a67c00;
+            font-size: 12px;
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        
+        .actions {
+            text-align: right;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .btn-approve {
+            background: #28a745;
+            color: #fff;
+        }
+        
+        .btn-reject {
+            background: #dc3545;
+            color: #fff;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="brand">HR System</div>
+        <ul>
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Employees</a></li>
+            <li><a href="#">Attendance</a></li>
+            <li><a href="#">Holidays</a></li>
+            <li><a href="#">Leaves</a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Profile</a></li>
+        </ul>
+    </div>
+
+    <!-- Leave Application Container -->
+    <div class="container">
+        <a href="leave_applications.html">← Back to Leave Applications</a>
+        <h2>Leave Application Details</h2>
+
+        <div class="details">
+            <div>
+                <span class="label">Employee ID</span>
+                <p id="emp-id"></p>
+            </div>
+            <div>
+                <span class="label">Employee Name</span>
+                <p id="emp-name"></p>
+            </div>
+            <div>
+                <span class="label">Leave Type</span>
+                <p id="leave-type"></p>
+            </div>
+            <div>
+                <span class="label">Number of Days</span>
+                <p id="leave-days"></p>
+            </div>
+            <div>
+                <span class="label">Start Date</span>
+                <p id="start-date"></p>
+            </div>
+            <div>
+                <span class="label">End Date</span>
+                <p id="end-date"></p>
+            </div>
+            <div style="grid-column: span 2;">
+                <span class="label">Reason for Leave</span>
+                <p id="reason"></p>
+            </div>
+            <div>
+                <span class="label">Away from HQ</span>
+                <p id="away-hq"></p>
+            </div>
+            <div>
+                <span class="label">Current Status</span>
+                <p><span class="status" id="status"></span></p>
+            </div>
+        </div>
+
+        <!-- Admin Only Section -->
+        <div id="admin-section" class="hidden">
+            <span class="label">Comments / Remarks</span>
+            <textarea id="comments" placeholder="Add your comments here..."></textarea>
+
+            <div class="actions">
+                <button class="btn btn-reject" onclick="updateLeaveStatus('Rejected')">Reject</button>
+                <button class="btn btn-approve" onclick="updateLeaveStatus('Approved')">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const role = localStorage.getItem("role");
+        const empId = localStorage.getItem("EmpId");
+
+        // Get leaveId from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const leaveId = urlParams.get("leaveId");
+
+        async function loadLeaveDetails() {
+            try {
+                console.log("Loading leave details for ID:", leaveId);
+                const res = await fetch(`http://localhost:3000/api/leave_applications/${leaveId}`);
+
+                if (!res.ok) {
+                    if (res.status === 404) {
+                        throw new Error("Leave application not found");
+                    } else {
+                        throw new Error("Failed to load leave details");
+                    }
+                }
+
+                const leave = await res.json();
+                console.log("Leave data received:", leave);
+
+                // Employee can view only their own leave
+                if (role === "employee" && leave.EmpId !== empId) {
+                    alert("You are not authorized to view this leave.");
+                    window.location.href = "leave_applications.html";
+                    return;
+                }
+
+                // Render leave details - using the correct field names from your backend
+                document.getElementById('emp-id').textContent = leave.EmpId || 'N/A';
+                document.getElementById('emp-name').textContent = leave.employeeName || leave.EmpId || 'N/A';
+                document.getElementById('leave-type').textContent = leave.leave_name || leave.leave_type || leave.leaveType || 'N/A';
+                document.getElementById('leave-days').textContent = leave.number_of_days || leave.numDays || '0';
+                document.getElementById('start-date').textContent = leave.start_date || 'N/A';
+                document.getElementById('end-date').textContent = leave.end_date || 'N/A';
+                document.getElementById('reason').textContent = leave.reason || 'Not specified';
+                document.getElementById('away-hq').textContent = leave.away_from_hq ? 'Yes' : 'No';
+
+                const statusElement = document.getElementById('status');
+                statusElement.textContent = leave.status || 'Pending';
+
+                // Update status color based on current status
+                if (leave.status === 'Approved') {
+                    statusElement.style.background = '#d4edda';
+                    statusElement.style.color = '#155724';
+                } else if (leave.status === 'Rejected') {
+                    statusElement.style.background = '#f8d7da';
+                    statusElement.style.color = '#721c24';
+                } else {
+                    statusElement.style.background = '#fff3cd';
+                    statusElement.style.color = '#856404';
+                }
+
+                // Show admin section if user is admin and leave is pending
+                if (role === 'admin' && leave.status === 'Pending') {
+                    document.getElementById('admin-section').classList.remove('hidden');
+                }
+
+            } catch (err) {
+                console.error("Error loading leave details:", err);
+                alert(err.message);
+                window.location.href = "leave_applications.html";
+            }
+        }
+
+        async function updateLeaveStatus(status) {
+            try {
+                const res = await fetch(`http://localhost:3000/api/leave_applications/${leaveId}/status`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        status,
+                        comments: document.getElementById('comments').value || "",
+                        role: role
+                    })
+                });
+
+                const data = await res.json();
+                if (data.error) {
+                    alert(data.error);
+                } else {
+                    alert(data.message);
+                    // Hide admin section after action
+                    document.getElementById('admin-section').classList.add('hidden');
+                    loadLeaveDetails(); // reload to show updated status
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Error updating leave status");
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", loadLeaveDetails);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HR System - Holidays</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f8f9fa;
+    }
+    header {
+      background: #fff;
+      padding: 15px 20px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    nav {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    nav a {
+      text-decoration: none;
+      color: #555;
+      font-weight: 500;
+    }
+    nav a.active {
+      font-weight: bold;
+    }
+    .btn {
+      padding: 6px 12px;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .container {
+      padding: 20px;
+    }
+    .top-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin: 15px 0;
+    }
+    .container h2 {
+      margin: 0 0 20px 0;
+    }
+    .holiday-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .holiday-table th, .holiday-table td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+    }
+    .holiday-table th {
+      background: #f4f4f4;
+    }
+    .holiday-name {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .holiday-actions {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+    .holiday-actions span {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #007bff;
+    }
+    .holiday-actions span.delete {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  
+
+  <!-- HEADER -->
+  <header>
+    <h1><i class="fa-solid fa-cube"></i> HR System</h1>
+    <nav>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="employees.html">Employees</a>
+      <a href="attendance.html">Attendance</a>
+      <a href="leaves.html">Leaves</a>
+      <a href="holidays.html">Holidays</a>
+      <a href="reports.html">Reports</a>
+      <i class="fa-solid fa-bell fa-lg" style="color:#555; cursor:pointer;"></i>
+    </nav>
+  </header>
+
+  <!-- MAIN -->
+  <div class="container">
+    <!-- Add New Holiday button -->
+    <div class="top-actions">
+      <button id="addHolidayBtn" class="btn"><i class="fa fa-plus"></i> Add New Holiday</button>
+    </div>
+
+    <h2>Company Holidays</h2>
+
+    <table class="holiday-table" id="holidayTable">
+      <thead>
+        <tr>
+          <th>YEAR</th>
+          <th>DATE</th>
+          <th>NAME OF THE HOLIDAY</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Holidays will be loaded here -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const role = localStorage.getItem("role") || "employee";
+
+    // Handle Add Holiday button visibility
+    const addBtn = document.getElementById("addHolidayBtn");
+    if (role !== "admin") {
+      addBtn.style.display = "none"; // Employees cannot add
+    } else {
+      addBtn.addEventListener("click", () => {
+        window.location.href = "add_new_holidays.html";
+      });
+    }
+
+    // Highlight active page in nav
+    const navLinks = document.querySelectorAll('header nav a');
+    const currentPage = window.location.pathname.split("/").pop();
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.classList.add('active');
+      }
+    });
+
+    async function loadHolidays() {
+      const tbody = document.querySelector("#holidayTable tbody");
+      try {
+        const res = await fetch("http://localhost:3000/api/holidays");
+        const holidays = await res.json();
+        tbody.innerHTML = "";
+
+        holidays.forEach(h => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `
+            <td>${h.year}</td>
+            <td>${new Date(h.date).toLocaleDateString()}</td>
+            <td>
+              <div class="holiday-name">
+                <span>${h.holiday_name}</span>
+                ${role === "admin" ? `
+                <div class="holiday-actions">
+                  <span class="edit" data-id="${h.Id}"><i class="fa fa-pen"></i> Edit</span>
+                  <span class="delete" data-id="${h.Id}"><i class="fa fa-trash"></i> Delete</span>
+                </div>` : ''}
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        if (role === "admin") {
+          document.querySelectorAll(".holiday-actions .edit").forEach(btn => {
+            btn.addEventListener("click", e => {
+              const id = e.currentTarget.dataset.id;
+              window.location.href = `add_new_holidays.html?id=${id}`;
+            });
+          });
+
+          document.querySelectorAll(".holiday-actions .delete").forEach(btn => {
+            btn.addEventListener("click", async e => {
+              const id = e.currentTarget.dataset.id;
+              if (confirm("Are you sure you want to delete this holiday?")) {
+                await fetch(`http://localhost:3000/api/holidays/${id}`, { method: "DELETE" });
+                loadHolidays();
+              }
+            });
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching holidays:", err);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", loadHolidays);
+  </script>
+
+</body>
+</html>

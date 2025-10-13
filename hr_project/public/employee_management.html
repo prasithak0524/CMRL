@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add New Employee</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7fa;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      margin-bottom: 5px;
+      font-size: 22px;
+      color: #2c3e50;
+    }
+    p {
+      margin-bottom: 20px;
+      color: #666;
+      font-size: 14px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #333;
+    }
+
+    input, select, textarea {
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .full-width {
+      grid-column: span 2;
+    }
+
+    .employee-type {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .employee-type label {
+      font-weight: normal;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn.cancel {
+      background: #ccc;
+      color: #333;
+    }
+    .btn.submit {
+      background: #3498db;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Add New Employee</h2>
+    <p>Enter the employee’s details below.</p>
+
+    <form id="addEmployeeForm">
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="fullname">Full Name</label>
+          <input type="text" id="fullname" placeholder="e.g., John Doe" required>
+        </div>
+
+        <div class="form-group">
+          <label for="empid">Employee ID</label>
+          <input type="text" id="empid" placeholder="e.g., EMP12345" required>
+        </div>
+        <div class="form-group">
+          <label for="dob">Date of Birth</label>
+          <input type="date" id="dob" required>
+        </div>
+
+        <div class="form-group">
+          <label for="doj">Date of Joining</label>
+          <input type="date" id="doj" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone" placeholder="e.g., (123) 456-7890">
+        </div>
+
+        <div class="form-group full-width">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="e.g., john.doe@example.com">
+        </div>
+
+        <div class="form-group full-width">
+          <label for="address">Address</label>
+          <textarea id="address" rows="2" placeholder="123 Main St, Anytown, USA"></textarea>
+        </div>
+      </div>
+
+      <h3>Position Details</h3>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="department">Department</label>
+          <select id="department" required>
+            <option value="">Select department</option>
+            <option>HR</option>
+            <option>Finance</option>
+            <option>IT</option>
+            <option>Operations</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="designation">Designation</label>
+          <select id="designation" required>
+            <option value="">Select designation</option>
+            <option>Manager</option>
+            <option>Executive</option>
+            <option>Intern</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Employee Type</label>
+        <div class="employee-type">
+          <label><input type="radio" name="type" value="Regular"> Regular</label>
+          <label><input type="radio" name="type" value="Outsourced"> Out Sourced</label>
+          <label><input type="radio" name="type" value="Contract"> On Contract</label>
+          <label><input type="radio" name="type" value="Apprentice"> Apprentice</label>
+          <label><input type="radio" name="type" value="Intern"> Intern</label>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button type="button" class="btn cancel">Cancel</button>
+        <button type="submit" class="btn submit">Add Employee</button>
+      </div>
+    </form>
+  </div>
+
+<script>
+  const form = document.getElementById("addEmployeeForm");
+  const cancelBtn = document.querySelector(".btn.cancel");
+
+  // ---------------- EMPLOYEE ID DROPDOWN ----------------
+  const empIdInput = document.getElementById("empid");
+
+  // dropdown container
+  const dropdown = document.createElement("ul");
+  dropdown.style.position = "absolute";
+  dropdown.style.background = "#fff";
+  dropdown.style.border = "1px solid #ccc";
+  dropdown.style.listStyle = "none";
+  dropdown.style.margin = 0;
+  dropdown.style.padding = "5px";
+  dropdown.style.width = empIdInput.offsetWidth + "px";
+  dropdown.style.display = "none";
+  dropdown.style.maxHeight = "150px";
+  dropdown.style.overflowY = "auto";
+  dropdown.style.zIndex = "1000";
+
+  empIdInput.parentNode.style.position = "relative";
+  empIdInput.parentNode.appendChild(dropdown);
+
+  let existingEmpIds = [];
+
+  // fetch EmpIds from backend
+  fetch("http://localhost:3000/api/employees")
+    .then(res => res.json())
+    .then(data => {
+      existingEmpIds = data.map(emp => emp.EmpId);
+    })
+    .catch(err => console.error("Error fetching empIds:", err));
+
+  function renderDropdown(list) {
+    dropdown.innerHTML = "";
+    if (list.length > 0) {
+      dropdown.style.display = "block";
+      list.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        li.style.padding = "6px";
+        li.style.cursor = "pointer";
+        li.addEventListener("click", () => {
+          empIdInput.value = item;
+          dropdown.style.display = "none";
+        });
+        li.addEventListener("mouseover", () => li.style.background = "#f0f0f0");
+        li.addEventListener("mouseout", () => li.style.background = "#fff");
+        dropdown.appendChild(li);
+      });
+    } else {
+      dropdown.style.display = "none";
+    }
+  }
+
+  // show all EmpIds on focus
+  empIdInput.addEventListener("focus", () => {
+    renderDropdown(existingEmpIds);
+  });
+
+  // filter on typing
+  empIdInput.addEventListener("input", () => {
+    const value = empIdInput.value.toUpperCase();
+    const filtered = existingEmpIds.filter(id => id.toUpperCase().includes(value));
+    renderDropdown(filtered);
+  });
+
+  // hide dropdown if clicked outside
+  document.addEventListener("click", (e) => {
+    if (!empIdInput.parentNode.contains(e.target)) {
+      dropdown.style.display = "none";
+    }
+  });
+
+  // ---------------- DOB vs DOJ VALIDATION ----------------
+  const dobInput = document.getElementById("dob");
+  const dojInput = document.getElementById("doj");
+
+  const dojError = document.createElement("small");
+  dojError.style.color = "red";
+  dojError.style.display = "none";
+  dojInput.parentNode.appendChild(dojError);
+
+  function validateDOJ() {
+    const dob = new Date(dobInput.value);
+    const doj = new Date(dojInput.value);
+
+    if (!dobInput.value || !dojInput.value) {
+      dojError.style.display = "none";
+      return true;
+    }
+
+    const minDOJ = new Date(dob);
+    minDOJ.setFullYear(dob.getFullYear() + 19);
+
+    if (doj < minDOJ) {
+      dojError.textContent = "❌ Not acceptable (Must be at least 19 years after DOB)";
+      dojError.style.display = "block";
+      return false;
+    } else {
+      dojError.style.display = "none";
+      return true;
+    }
+  }
+
+  dobInput.addEventListener("change", validateDOJ);
+  dojInput.addEventListener("input", validateDOJ);
+
+  // ---------------- PHONE VALIDATION ----------------
+  const phoneInput = document.getElementById("phone");
+  const phoneError = document.createElement("small");
+  phoneError.style.color = "red";
+  phoneError.style.display = "none";
+  phoneInput.parentNode.appendChild(phoneError);
+
+  function validatePhone() {
+    const phoneVal = phoneInput.value.trim();
+    const phoneRegex = /^[0-9]{10}$/; // 10 digits only
+    if (phoneVal === "") {
+      phoneError.style.display = "none"; // optional field
+      return true;
+    }
+    if (!phoneRegex.test(phoneVal)) {
+      phoneError.textContent = "❌ Phone number must be exactly 10 digits";
+      phoneError.style.display = "block";
+      return false;
+    } else {
+      phoneError.style.display = "none";
+      return true;
+    }
+  }
+
+  phoneInput.addEventListener("input", validatePhone);
+
+  // ---------------- CANCEL BUTTON ----------------
+  cancelBtn.addEventListener("click", () => {
+    form.reset();
+    dojError.style.display = "none";
+    phoneError.style.display = "none";
+  });
+
+  // ---------------- SUBMIT ----------------
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const validDOJ = validateDOJ();
+    const validPhone = validatePhone();
+
+    if (!validDOJ || !validPhone) {
+      alert("Please fix errors before submitting.");
+      return;
+    }
+
+    const formData = {
+      EmpId: empIdInput.value.trim(),
+      Name: document.getElementById("fullname").value.trim(),
+      Dept: document.getElementById("department").value,
+      Design: document.getElementById("designation").value,
+      DOB: dobInput.value,
+      DOJ: dojInput.value,
+      Phone: phoneInput.value.trim(),
+      Email: document.getElementById("email").value.trim(),
+      Address: document.getElementById("address").value.trim(),
+      EmpType: document.querySelector('input[name="type"]:checked')?.value || "Permanent",
+      Active: 1,
+      Password: "default123"
+    };
+
+    fetch("http://localhost:3000/api/employees", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert("Employee added successfully!");
+      form.reset();
+      dojError.style.display = "none";
+      phoneError.style.display = "none";
+    })
+    .catch(err => {
+      console.error("Error adding employee:", err);
+      alert("Error adding employee. Check console for details.");
+    });
+  });
+</script>
+
+</body>
+</html>

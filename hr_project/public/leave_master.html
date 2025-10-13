@@ -1,0 +1,351 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Leave Master - HRMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+         :root {
+            --bg: #f6f7f9;
+            --card: #ffffff;
+            --muted: #9aa3ad;
+            --accent: #2b8be6;
+            --text: #1f2933;
+            --table-border: #eef2f6;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        body {
+            margin: 0;
+            font-family: 'Roboto', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            background: linear-gradient(180deg, #f4f6f8 0%, #f6f7f9 100%);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .paper {
+            width: 1024px;
+            margin: 28px auto;
+            background: var(--card);
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+            border-radius: 6px;
+            padding: 22px 28px;
+            border: 1px solid #e6e9ec;
+        }
+        
+        .top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text);
+            margin-right: 20px;
+        }
+        
+        nav {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            font-size: 14px;
+            color: var(--muted)
+        }
+        
+        nav a {
+            color: var(--muted);
+            text-decoration: none
+        }
+        
+        nav a.active {
+            color: var(--text);
+            font-weight: 700
+        }
+        
+        .profile {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .bell {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .profile-pic {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid #ddd;
+        }
+        
+        .title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 14px 2px 18px
+        }
+        
+        .title-row h2 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 700
+        }
+        
+        .btn {
+            background: var(--accent);
+            color: #fff;
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px
+        }
+        
+        .btn .plus {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            background: rgba(255, 255, 255, 0.18);
+            text-align: center;
+            line-height: 18px;
+            font-weight: 700
+        }
+        
+        .table-wrap {
+            background: transparent;
+            border-radius: 6px;
+            padding: 10px;
+            border-top: 1px solid transparent
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px
+        }
+        
+        thead tr th {
+            text-align: left;
+            padding: 14px 12px;
+            color: var(--muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--table-border);
+        }
+        
+        tbody tr td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #f0f4f7;
+            color: #3b4750
+        }
+        
+        .emp-id {
+            font-weight: 700;
+            color: #2b2f33
+        }
+        
+        .leave-type {
+            color: #6b7280;
+            font-weight: 600
+        }
+        
+        .leave-desc {
+            color: #7b8791
+        }
+        
+        .balance {
+            font-weight: 600;
+            text-align: right
+        }
+        
+        .edit a {
+            color: var(--accent);
+            text-decoration: none
+        }
+        
+        .paper .spacer {
+            height: 260px
+        }
+        
+        @media (max-width:1100px) {
+            .paper {
+                width: 94%
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="paper" role="main">
+        <div class="top">
+            <div class="brand">
+                <div class="logo-text">HR System</div>
+            </div>
+            <div class="profile">
+                <nav aria-label="Main">
+                    <nav aria-label="Main">
+                        <a href="dashboard.html">Dashboard</a>
+                        <a href="employees.html">Employees</a>
+                        <a href="attendance.html">Attendance</a>
+                        <a href="holidays.html">Holidays</a>
+                        <a href="leaves.html">Leaves</a>
+                        <a href="adjust_leave_balance.html" id="adjustLeaveLink">Adjust Leave Balance</a>
+                        <a href="reports.html">Reports</a>
+                    </nav>
+
+
+                </nav>
+                <img src="https://cdn-icons-png.flaticon.com/512/1827/1827392.png" alt="Notifications" class="bell" />
+                <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="Profile" class="profile-pic" />
+            </div>
+        </div>
+
+        <div class="title-row">
+            <h2>Leave Master</h2>
+            <button class="btn" id="addLeaveBtn"><span class="plus">+</span> Add Leave Balance</button>
+        </div>
+
+        <div class="table-wrap">
+            <table aria-describedby="leave-table">
+                <thead>
+                    <tr>
+                        <th style="width:16%">EMPLOYEE ID</th>
+                        <th style="width:24%">LEAVE TYPE</th>
+                        <th style="width:46%">LEAVE DESCRIPTION</th>
+                        <th style="width:8%;text-align:right">BALANCE</th>
+                        <th style="width:8%;text-align:center">EDIT</th>
+                    </tr>
+                </thead>
+                <tbody id="leaveTableBody">
+                    <!-- Leave rows populated dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="spacer"></div>
+    </div>
+
+    <script>
+        // Highlight active page in top navigation
+        const navLinks = document.querySelectorAll('.top nav a');
+        const currentPage = window.location.pathname.split("/").pop();
+
+        navLinks.forEach(link => {
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+        const role = localStorage.getItem("role") || "employee";
+        const empId = (localStorage.getItem("EmpId") || '').trim();
+        const tableBody = document.getElementById("leaveTableBody");
+
+        // Leave code to name mapping based on your database
+        const leaveNameMap = {
+            'CL': 'Casual Leave',
+            'EL': 'Earned Leave',
+            'HL': 'Hospital Leave',
+            'ML': 'Maternity Leave',
+            'PL': 'Paternity Leave',
+            'SL': 'Sick Leave',
+            'VL': 'Vacation Leave'
+        };
+
+        async function refreshLeaveTable() {
+            try {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;">Loading leave data...</td></tr>';
+
+                const response = await fetch(`http://localhost:3000/api/leave_master?role=${role}&EmpId=${empId}`);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                renderTable(data);
+
+            } catch (err) {
+                console.error('Error fetching leave master:', err);
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Failed to load leave data. Please check if server is running.</td></tr>';
+            }
+        }
+
+        function renderTable(data) {
+            tableBody.innerHTML = '';
+
+            if (!data || data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;">No leave data available</td></tr>';
+                return;
+            }
+
+            let hasData = false;
+
+            data.forEach(leave => {
+                        // For employees, only show their own data
+                        if (role === 'admin' || (leave.EmpId || '').trim() === empId) {
+                            hasData = true;
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                    <td class="emp-id">${leave.EmpId || 'N/A'}</td>
+                    <td class="leave-type">${leave.leave_name || leaveNameMap[leave.leave_code] || leave.leave_code}</td>
+                    <td class="leave-desc">${leave.leave_desc || 'No description'}</td>
+                    <td class="balance">${leave.balance !== null && leave.balance !== undefined ? leave.balance : 0}</td>
+                    <td class="edit">${role === 'admin' ? `<a href="adjust_leave_balance.html?empId=${leave.EmpId}&type=${leave.leave_code}" target="_blank">Edit</a>` : '-'}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        });
+
+        if (!hasData) {
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;">No leave data available for your account</td></tr>';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const addBtn = document.getElementById("addLeaveBtn");
+        const adjustLeaveLink = document.getElementById("adjustLeaveLink");
+
+        // Role-based access control
+        if (role !== 'admin') {
+            if (addBtn) addBtn.style.display = 'none';
+            if (adjustLeaveLink) adjustLeaveLink.style.display = 'none';
+        } else {
+            if (addBtn) {
+                addBtn.addEventListener("click", () => {
+                    window.open("adjust_leave_balance.html", "_blank", "width=500,height=600,scrollbars=yes");
+                });
+            }
+        }
+
+        // Load table data
+        refreshLeaveTable();
+    });
+    </script>
+</body>
+
+</html>

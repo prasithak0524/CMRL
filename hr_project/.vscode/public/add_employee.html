@@ -1,0 +1,62 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Add Employee</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<a href="/">← Home</a>
+<h2>Add New Employee</h2>
+<form id="empForm">
+<label>Employee Code: <input name="emp_code" required></label><br>
+<label>Full Name: <input name="name" required></label><br>
+<label>DOB: <input type="date" name="dob"></label><br>
+<label>Contact: <input name="contact"></label><br>
+<label>Address:<br><textarea name="address"></textarea></label><br>
+<label>Department: <input name="department"></label><br>
+<label>Designation: <input name="designation"></label><br>
+<label>Date of Joining: <input type="date" name="date_of_joining"></label><br>
+<label>Employee Type:
+<select name="employee_type">
+<option>Permanent</option>
+<option>Contract</option>
+<option>Intern</option>
+<option>Other</option>
+</select>
+</label><br>
+<label>Casual Leave Balance: <input type="number" step="0.5" name="casual_leave_balance" value="0"></label><br>
+<label>Earned Leave Balance: <input type="number" step="0.5" name="earned_leave_balance" value="0"></label><br>
+<button type="submit">Add Employee</button>
+</form>
+
+
+<div id="result"></div>
+
+
+<script>
+const form = document.getElementById('empForm');
+form.addEventListener('submit', async (e)=>{
+e.preventDefault();
+const fd = new FormData(form);
+const body = Object.fromEntries(fd.entries());
+// convert numeric fields
+body.casual_leave_balance = parseFloat(body.casual_leave_balance) || 0;
+body.earned_leave_balance = parseFloat(body.earned_leave_balance) || 0;
+
+
+const res = await fetch('/api/employees', {
+method: 'POST',
+headers: {'Content-Type':'application/json'},
+body: JSON.stringify(body)
+});
+const j = await res.json();
+if(res.ok) {
+document.getElementById('result').innerText = `Employee added with id ${j.id}`;
+form.reset();
+} else {
+document.getElementById('result').innerText = `Error: ${j.error||'unknown'}`;
+}
+});
+</script>
+</body>
+</html>

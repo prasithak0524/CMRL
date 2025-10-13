@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Attendance System</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 0;
+        }
+        /* Header */
+        
+        header {
+            background: #fff;
+            padding: 12px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            gap: 10px;
+        }
+        
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .logo i {
+            font-size: 22px;
+            color: #000;
+        }
+        /* Page Title & Subtext */
+        
+        .page-title {
+            margin: 25px 30px 5px;
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .subtitle {
+            margin: 0 30px 20px;
+            font-size: 16px;
+            color: #555;
+        }
+        /* Main Card */
+        
+        .card {
+            background: #fff;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 700px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .datetime-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: bold;
+            color: #666;
+        }
+        
+        .datetime {
+            font-size: 20px;
+            font-weight: bold;
+            margin: 10px 0 20px;
+        }
+        
+        button {
+            padding: 12px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #fff;
+            transition: 0.3s;
+        }
+        
+        .btn-in {
+            background: #0073e6;
+        }
+        
+        .btn-in:hover {
+            background: #005bb5;
+        }
+        
+        .btn-out {
+            background: #e63946;
+        }
+        
+        .btn-out:hover {
+            background: #b8262f;
+        }
+        /* Disabled button look */
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        /* Summary Section */
+        
+        .summary {
+            background: #fff;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .summary h2 {
+            text-align: left;
+            margin: 0 0 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        
+        .summary-boxes {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        
+        .summary-card {
+            flex: 1;
+            background: #f9fafc;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .summary-text h3 {
+            margin: 0;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .summary-text p {
+            margin: 3px 0 0;
+            font-size: 16px;
+            font-weight: bold;
+            color: #0073e6;
+        }
+        /* Icon styling for summary */
+        
+        .icon-circle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        
+        .blue {
+            background: #e6f0ff;
+            color: #0073e6;
+        }
+        
+        .orange {
+            background: #ffe8d9;
+            color: #e67e22;
+        }
+        
+        .green {
+            background: #e0f7e9;
+            color: #27ae60;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+        
+        th,
+        td {
+            padding: 8px 6px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Page Title -->
+    <div class="page-title">Mark Your Attendance</div>
+    <div class="subtitle">Welcome back! Please clock in to start your day.</div>
+
+    <!-- Main Card -->
+    <div class="card">
+        <div class="datetime-label">Current Date & Time</div>
+        <div id="datetime" class="datetime"></div>
+
+        <!-- btnOut is hidden by default, will be toggled by JS -->
+        <button id="btnIn" class="btn-in" onclick="clockIn()">Clock In</button>
+        <button id="btnOut" class="btn-out" onclick="clockOut()" style="display:none">Clock Out</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary">
+        <h2>Today's Summary</h2>
+        <div class="summary-boxes">
+            <div class="summary-card">
+                <div class="icon-circle blue"><i class="fa-solid fa-right-to-bracket"></i></div>
+                <div class="summary-text">
+                    <h3>Last Clock In</h3>
+                    <p id="lastIn">--:--</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="icon-circle orange"><i class="fa-solid fa-right-from-bracket"></i></div>
+                <div class="summary-text">
+                    <h3>Last Clock Out</h3>
+                    <p id="lastOut">--:--</p>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="icon-circle green"><i class="fa-solid fa-hourglass-half"></i></div>
+                <div class="summary-text">
+                    <h3>Hours Worked Today</h3>
+                    <p id="hoursWorked">0.00 hrs</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="summary" style="max-width:700px; text-align:left;">
+        <h2>Today's Logs</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Clock In</th>
+                    <th>Clock Out</th>
+                    <th>Work Hours (hrs)</th>
+                </tr>
+            </thead>
+            <tbody id="logsTableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const EmpId = localStorage.getItem("EmpId") || "E001";
+
+        // Date/time display
+        function updateDateTime() {
+            const now = new Date();
+            document.getElementById("datetime").innerHTML =
+                now.toLocaleDateString("en-US", {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                }) +
+                ", " + now.toLocaleTimeString();
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+
+        // Local storage key per day
+        function todayKey() {
+            const d = new Date();
+            const day = d.toISOString().slice(0, 10); // YYYY-MM-DD
+            return `attendance_${EmpId}_${day}`;
+        }
+
+        function readLocalLogs() {
+            try {
+                return JSON.parse(localStorage.getItem(todayKey()) || "[]");
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveLocalLogs(logs) {
+            localStorage.setItem(todayKey(), JSON.stringify(logs));
+        }
+
+        function formatTime(dateObj) {
+            return new Date(dateObj).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        }
+
+        function secondsToHoursDecimal(sec) {
+            return Number((sec / 3600).toFixed(2));
+        }
+
+        function renderLogs(logs) {
+            const tbody = document.getElementById("logsTableBody");
+            tbody.innerHTML = "";
+            logs.forEach(log => {
+                const signIn = log.SignIn || "--:--";
+                const signOut = log.SignOut || "--:--";
+                // Prefer numeric WorkHrsDecimal if present, else WorkHrs
+                let workDecimal = 0;
+                if (typeof log.WorkHrsDecimal === 'number') workDecimal = log.WorkHrsDecimal;
+                else if (!isNaN(parseFloat(log.WorkHrs))) workDecimal = parseFloat(log.WorkHrs);
+                const workStr = workDecimal ? workDecimal.toFixed(2) : "0.00";
+                const row = `<tr>
+        <td>${signIn}</td>
+        <td>${signOut}</td>
+        <td>${workStr}</td>
+      </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function updateSummaryUIFromLogs(logs) {
+            // lastIn = most recent SignIn
+            const lastLog = logs.length ? logs[logs.length - 1] : null;
+            const lastIn = lastLog ? (lastLog.SignIn || "--:--") : "--:--";
+            // lastOut = last log that has SignOut not null (search backwards)
+            let lastOut = "--:--";
+            for (let i = logs.length - 1; i >= 0; i--) {
+                if (logs[i].SignOut) {
+                    lastOut = logs[i].SignOut;
+                    break;
+                }
+            }
+            // total hours
+            const total = logs.reduce((acc, l) => {
+                if (typeof l.WorkHrsDecimal === 'number') return acc + l.WorkHrsDecimal;
+                if (!isNaN(parseFloat(l.WorkHrs))) return acc + parseFloat(l.WorkHrs);
+                return acc;
+            }, 0);
+
+            document.getElementById("lastIn").innerText = lastIn || "--:--";
+            document.getElementById("lastOut").innerText = lastOut || "--:--";
+            document.getElementById("hoursWorked").innerText = total.toFixed(2) + " hrs";
+
+            // Determine whether user currently clocked in (open log without SignOut)
+            const openLog = logs.find(l => !l.SignOut);
+            const btnIn = document.getElementById("btnIn");
+            const btnOut = document.getElementById("btnOut");
+            if (openLog) {
+                btnIn.style.display = "none";
+                btnOut.style.display = "inline-block";
+            } else {
+                btnIn.style.display = "inline-block";
+                btnOut.style.display = "none";
+            }
+
+            renderLogs(logs);
+        }
+
+        // Try to load summary from server, fallback to local storage
+        async function loadSummary() {
+            const logsFromLocal = readLocalLogs();
+            // first show local while we try server (fast UI). Then try server.
+            updateSummaryUIFromLogs(logsFromLocal);
+
+            try {
+                const res = await fetch(`http://localhost:3000/api/summary/${EmpId}`);
+                if (!res.ok) throw new Error("Server summary failed");
+                const data = await res.json();
+                // If server returned logs in expected shape, use that; otherwise keep local
+                if (data && Array.isArray(data.logs)) {
+                    // Normalize server logs into same shape we use locally
+                    const normalized = data.logs.map(l => {
+                        // server fields: SignIn, SignOut, WorkHrs (maybe numeric/string)
+                        // We cannot compute WorkHrsDecimal reliably unless server provides numeric; try to parse
+                        const wd = (l.WorkHrs !== undefined && !isNaN(parseFloat(l.WorkHrs))) ? parseFloat(l.WorkHrs) : (l.WorkHrsDecimal || 0);
+                        return {
+                            SignIn: l.SignIn || "--:--",
+                            SignOut: l.SignOut || null,
+                            WorkHrs: l.WorkHrs || (wd ? wd.toFixed(2) : "0.00"),
+                            WorkHrsDecimal: wd
+                        };
+                    });
+                    // update local cache too so subsequent reloads are consistent
+                    saveLocalLogs(normalized);
+                    updateSummaryUIFromLogs(normalized);
+                    return;
+                }
+            } catch (err) {
+                // Server not available or returned unexpected data — keep local logs shown
+                console.warn("Server summary unavailable, using local data.", err);
+            }
+        }
+
+        // When user clicks Clock In
+        async function clockIn() {
+            const btnIn = document.getElementById("btnIn");
+            const btnOut = document.getElementById("btnOut");
+
+            btnIn.disabled = true;
+
+            // create a new log entry locally immediately
+            const now = new Date();
+            const formatted = formatTime(now);
+            const newLog = {
+                SignIn: formatted,
+                SignInISO: now.toISOString(),
+                SignOut: null,
+                WorkHrs: 0,
+                WorkHrsDecimal: 0
+            };
+
+            const logs = readLocalLogs();
+            logs.push(newLog);
+            saveLocalLogs(logs);
+            updateSummaryUIFromLogs(logs);
+
+            // try to tell server (non-blocking fallback)
+            try {
+                const res = await fetch("http://localhost:3000/api/clockin", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        EmpId
+                    })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    // show server message only if there is any helpful detail
+                    console.warn("Clock-in server response not ok:", data.message || res.statusText);
+                } else {
+                    // If server returns updated summary/logs, update local copy
+                    if (data && Array.isArray(data.logs)) {
+                        const normalized = data.logs.map(l => ({
+                            SignIn: l.SignIn || "--:--",
+                            SignOut: l.SignOut || null,
+                            WorkHrs: l.WorkHrs || 0,
+                            WorkHrsDecimal: !isNaN(parseFloat(l.WorkHrs)) ? parseFloat(l.WorkHrs) : 0
+                        }));
+                        saveLocalLogs(normalized);
+                        updateSummaryUIFromLogs(normalized);
+                    }
+                    if (data && data.message) alert(data.message);
+                }
+            } catch (err) {
+                console.warn("Clock-in server error, saved locally.", err);
+                // optionally inform user the server couldn't be reached
+                // alert("Clock-in saved locally (server unreachable).");
+            } finally {
+                // Show Clock Out button (we are now 'clocked in')
+                btnIn.disabled = false;
+                btnIn.style.display = "none";
+                btnOut.style.display = "inline-block";
+            }
+        }
+
+        // When user clicks Clock Out
+        async function clockOut() {
+            const btnIn = document.getElementById("btnIn");
+            const btnOut = document.getElementById("btnOut");
+
+            btnOut.disabled = true;
+
+            const logs = readLocalLogs();
+            // find the last open log (no SignOut)
+            let idx = -1;
+            for (let i = logs.length - 1; i >= 0; i--) {
+                if (!logs[i].SignOut) {
+                    idx = i;
+                    break;
+                }
+            }
+            if (idx === -1) {
+                alert("No active clock-in found. Please clock in first.");
+                btnOut.disabled = false;
+                return;
+            }
+
+            const now = new Date();
+            const formattedOut = formatTime(now);
+            const signInISO = logs[idx].SignInISO ? new Date(logs[idx].SignInISO) : null;
+            let secDiff = 0;
+            if (signInISO) secDiff = Math.round((now.getTime() - signInISO.getTime()) / 1000);
+            const hoursDecimal = secondsToHoursDecimal(secDiff);
+
+            logs[idx].SignOut = formattedOut;
+            logs[idx].SignOutISO = now.toISOString();
+            logs[idx].WorkHrsDecimal = hoursDecimal;
+            logs[idx].WorkHrs = hoursDecimal.toFixed(2);
+
+            saveLocalLogs(logs);
+            updateSummaryUIFromLogs(logs);
+
+            // Try to inform server
+            try {
+                const res = await fetch("http://localhost:3000/api/clockout", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        EmpId
+                    })
+                });
+                const data = await res.json().catch(() => ({}));
+                if (!res.ok) {
+                    console.warn("Clock-out server response not ok:", data.message || res.statusText);
+                } else {
+                    // If server returns new logs, sync
+                    if (data && Array.isArray(data.logs)) {
+                        const normalized = data.logs.map(l => ({
+                            SignIn: l.SignIn || "--:--",
+                            SignOut: l.SignOut || null,
+                            WorkHrs: l.WorkHrs || 0,
+                            WorkHrsDecimal: !isNaN(parseFloat(l.WorkHrs)) ? parseFloat(l.WorkHrs) : 0
+                        }));
+                        saveLocalLogs(normalized);
+                        updateSummaryUIFromLogs(normalized);
+                    }
+                    if (data && data.message) alert(data.message);
+                }
+            } catch (err) {
+                console.warn("Clock-out server error, updated locally.", err);
+                // alert("Clock-out recorded locally (server unreachable).");
+            } finally {
+                btnOut.disabled = false;
+                // after clock out, show clock in again
+                btnOut.style.display = "none";
+                btnIn.style.display = "inline-block";
+            }
+        }
+
+        // Initialize
+        loadSummary();
+    </script>
+
+</body>
+
+</html>
