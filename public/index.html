@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALMS - Login</title>
+  <style>
+    /* Reset */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f9f9f9;
+    }
+
+    .login-container {
+      text-align: center;
+      width: 350px;
+      padding: 30px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .logo {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .title {
+      font-weight: bold;
+      font-size: 22px;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .welcome {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .small-text {
+      font-size: 13px;
+      color: gray;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      text-align: left;
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      font-size: 13px;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        appearance: textfield;
+        -webkit-appearance: textfield;
+        -moz-appearance: textfield;
+    }
+
+    .options {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+
+    .options input {
+      margin-right: 5px;
+    }
+
+    .options a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: black;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .login-btn:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <div class="logo">⬛</div>
+    <div class="title">ALMS</div>
+    <div class="subtitle">Attendance & Leave Management System</div>
+    
+    <div class="welcome">Welcome</div>
+    <div class="small-text">Log in to your account to continue.</div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="empid">User ID</label>
+        <input type="text" id="empid" placeholder="Enter your user ID" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+      
+      <div class="options">
+        <label><input type="checkbox" id="remember"> Remember Me</label>
+        <a href="#">Forgot Password?</a>
+      </div>
+      
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const empid = document.getElementById("empid").value.trim();
+      const password = document.getElementById("password").value.trim();
+      if (!empid || !password) {
+        alert("Please enter both EmpId and Password.");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:3000/api/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ empid, password })
+        });
+
+        const result = await res.json();
+
+        if (res.ok) {
+          // ✅ Save role and basic info for dashboard
+          localStorage.setItem("role", result.role);
+          localStorage.setItem("EmpId", result.EmpId);
+          localStorage.setItem("Name", result.Name || "");
+          alert("Login successful!");
+          window.location.href = "dashboard.html";
+        } else {
+          alert(result.message || "Login failed!");
+        }
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Something went wrong! Check server and network.");
+      }
+    });
+  </script>
+
+</body>
+</html>

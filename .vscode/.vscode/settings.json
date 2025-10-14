@@ -1,0 +1,20 @@
+{
+    "sqltools.connections": [
+        {
+            "mysqlOptions": {
+                "authProtocol": "xprotocol",
+                "enableSsl": "Disabled"
+            },
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 30000,
+            "driver": "MySQL",
+            "username": "root",
+            "database": "hr_db",
+            "connectionTimeout": 60,
+            "name": "MYSQL local",
+            "password": "1234"
+        }
+    ]
+}
