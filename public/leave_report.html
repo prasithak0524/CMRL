@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Leave Reports - HR System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f9f9f9;
+            color: #333;
+        }
+        /* Navbar */
+        
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar .brand {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .navbar .menu {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .navbar .menu a:hover {
+            color: #007bff;
+        }
+        /* Page Container */
+        
+        .container {
+            padding: 20px 40px;
+        }
+        
+        h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: bold;
+        }
+        
+        p.subtext {
+            margin: 5px 0 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        /* Top Actions */
+        
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .actions button {
+            border: 1px solid #ddd;
+            background: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .actions button:hover {
+            background: #f1f1f1;
+        }
+        /* Filters Section */
+        
+        .filters {
+            background: #fff;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+        
+        .filters h3 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+        
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr) auto;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-size: 13px;
+            margin-bottom: 4px;
+            color: #555;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .filter-row button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 7px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        
+        .filter-row button:hover {
+            background: #0056b3;
+        }
+        /* Table */
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border: 1px solid #ddd;
+        }
+        
+        table thead {
+            background: #f1f1f1;
+        }
+        
+        table th,
+        table td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+            font-size: 13px;
+        }
+        
+        table th {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="brand">HR System</div>
+        <div class="menu">
+            <a href="#">Dashboard</a>
+            <a href="#">Employees</a>
+            <a href="#">Attendance</a>
+            <a href="#"><b>Holidays</b></a>
+            <a href="#">Leaves</a>
+            <a href="#">Reports</a>
+            <a href="#">Profile</a>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container">
+        <h2>Leave Reports</h2>
+        <p class="subtext">Generate and view reports related to employee leaves.</p>
+
+        <!-- Top Actions -->
+        <div class="actions">
+            <button><span>📄</span> Export as PDF</button>
+            <button><span>📑</span> Export as CSV</button>
+        </div>
+
+        <!-- Filters -->
+        <div class="filters">
+            <h3>Filters</h3>
+            <div class="filter-row">
+                <div class="form-group">
+                    <label for="employeeId">Employee ID</label>
+                    <select id="employeeId">
+            <option value="All">All</option>
+          </select>
+                </div>
+                <div class="form-group">
+                    <label for="leaveType">Leave Type</label>
+                    <select id="leaveType">
+            <option value="All">All</option>
+            <option value="1">CL</option>
+            <option value="2">EL</option>
+            <option value="3">HL</option>
+          </select>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <select id="status">
+            <option value="All">All</option>
+            <option value="Approved">Approved</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Pending">Pending</option>
+          </select>
+                </div>
+                <button id="generateReport">Generate Report</button>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th>EMPLOYEE ID</th>
+                    <th>LEAVE TYPE</th>
+                    <th>REASON</th>
+                    <th>STATUS</th>
+                </tr>
+            </thead>
+            <tbody id="reportTable">
+                <!-- Data will load here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Load employee IDs dynamically
+        async function loadEmployeeIds() {
+            try {
+                const res = await fetch("http://localhost:3000/api/employees");
+                const employees = await res.json();
+                const empSelect = document.getElementById("employeeId");
+
+                // Clear existing options except "All"
+                empSelect.innerHTML = '<option value="All">All</option>';
+
+                employees.forEach(emp => {
+                    const option = document.createElement("option");
+                    option.value = emp.EmpId;
+                    option.textContent = emp.EmpId;
+                    empSelect.appendChild(option);
+                });
+            } catch (err) {
+                console.error("Error loading employee IDs:", err);
+            }
+        }
+
+        // Generate report
+        async function generateReport() {
+            const employeeId = document.getElementById("employeeId").value;
+            const leaveType = document.getElementById("leaveType").value;
+            const status = document.getElementById("status").value;
+
+            try {
+                // Use the correct leaves API endpoint
+                const res = await fetch("http://localhost:3000/api/leaves");
+                let data = await res.json();
+
+                // Apply filters
+                if (employeeId && employeeId !== "All") {
+                    data = data.filter(item => item.EmpId === employeeId);
+                }
+
+                if (leaveType && leaveType !== "All") {
+                    const typeMap = {
+                        '1': 'Casual Leave',
+                        '2': 'Earned Leave',
+                        '3': 'Hospital Leave',
+                        'CL': 'Casual Leave',
+                        'EL': 'Earned Leave',
+                        'HL': 'Hospital Leave'
+                    };
+                    const searchType = typeMap[leaveType] || leaveType;
+                    data = data.filter(item => item.leaveType === searchType);
+                }
+
+                if (status && status !== "All") {
+                    data = data.filter(item => item.status === status);
+                }
+
+                const tableBody = document.getElementById("reportTable");
+                tableBody.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    tableBody.innerHTML = "<tr><td colspan='4' style='text-align:center;'>No data found</td></tr>";
+                } else {
+                    // Inside the data.forEach loop in generateReport() function
+                    data.forEach(row => {
+                        const tr = document.createElement("tr");
+                        const statusClass = row.status ? row.status.toLowerCase() : 'pending';
+                        tr.innerHTML = `
+        <td>${row.EmpId}</td>
+        <td>${row.leaveType || 'N/A'}</td>
+        <td>${row.reason || "-"}</td>
+        <td class="status-${statusClass}">${row.status || "Pending"}</td>
+    `;
+                        tableBody.appendChild(tr);
+                    });
+                }
+            } catch (err) {
+                console.error("Error fetching report:", err);
+                const tableBody = document.getElementById("reportTable");
+                tableBody.innerHTML = "<tr><td colspan='4' style='text-align:center;color:red;'>Error loading data</td></tr>";
+            }
+        }
+        // Export functions
+        function exportCSV() {
+            const rows = document.querySelectorAll("#reportTable tr");
+            if (rows.length === 0) {
+                alert("No data to export");
+                return;
+            }
+
+            let csv = [];
+            rows.forEach(row => {
+                const cols = row.querySelectorAll("td");
+                const rowData = [];
+                cols.forEach(col => rowData.push(`"${col.textContent}"`));
+                csv.push(rowData.join(","));
+            });
+
+            // Add headers
+            csv.unshift(['"EMPLOYEE ID"', '"LEAVE TYPE"', '"REASON"', '"STATUS"'].join(","));
+
+            const blob = new Blob([csv.join("\n")], {
+                type: "text/csv"
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `leave-report-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function exportPDF() {
+            alert("PDF export would be implemented here with a PDF library");
+            // You would typically use a library like jsPDF or window.print() for PDF export
+        }
+
+        // Events
+        document.getElementById("generateReport").addEventListener("click", generateReport);
+
+        // Add export event listeners
+        document.querySelector('button:nth-child(1)').addEventListener('click', exportPDF);
+        document.querySelector('button:nth-child(2)').addEventListener('click', exportCSV);
+
+        // Auto-generate on load
+        window.addEventListener("load", () => {
+            loadEmployeeIds().then(() => {
+                generateReport();
+            });
+        });
+    </script>
+
+</body>
+
+</html>

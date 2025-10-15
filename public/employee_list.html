@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Employee Management</title>
+<style>
+  body { font-family: Arial; padding: 20px; background: #f5f7fa; }
+  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+  th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+  th { background: #3498db; color: white; }
+</style>
+</head>
+<body>
+
+<h2>All Employees</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>EmpId</th>
+      <th>Name</th>
+      <th>Department</th>
+      <th>Designation</th>
+      <th>Active</th>
+    </tr>
+  </thead>
+  <tbody id="employeeTableBody">
+    <!-- Employees will be injected here -->
+  </tbody>
+</table>
+
+<script>
+async function loadEmployees() {
+  try {
+    const res = await fetch("http://localhost:3000/api/employees");
+    const employees = await res.json();
+    const tableBody = document.getElementById("employeeTableBody");
+    tableBody.innerHTML = "";
+
+    employees.forEach(emp => {
+      const row = `<tr>
+        <td>${emp.EmpId}</td>
+        <td>${emp.Name}</td>
+        <td>${emp.Dept}</td>
+        <td>${emp.Design}</td>
+        <td>${emp.Active ? "Yes" : "No"}</td>
+      </tr>`;
+      tableBody.innerHTML += row;
+    });
+  } catch (err) {
+    console.error("Error loading employees:", err);
+  }
+}
+
+// Load employees on page load
+loadEmployees();
+</script>
+
+</body>
+</html>
