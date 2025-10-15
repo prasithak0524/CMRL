@@ -299,7 +299,11 @@
         startInput.addEventListener("change", calculateDays);
         endInput.addEventListener("change", calculateDays);
 
+<<<<<<< HEAD
         // Update your form submission in apply_leave.html
+=======
+        // Form submission
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
         document.getElementById("leaveForm").addEventListener("submit", function(e) {
             e.preventDefault();
 
@@ -311,6 +315,7 @@
             const reason = document.getElementById("reason").value;
             const away_from_hq = document.getElementById("awayFromHQ").checked;
 
+<<<<<<< HEAD
             console.log("📤 Sending data:", {
                 EmpId,
                 leave_type_id,
@@ -321,11 +326,17 @@
                 away_from_hq
             });
 
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
             if (!EmpId || !leave_type_id || !start_date || !end_date || !number_of_days || !reason) {
                 return alert("Please fill all required fields.");
             }
 
+<<<<<<< HEAD
             fetch("http://localhost:3000/api/leaves", {
+=======
+            fetch("http://localhost:3000/api/leaves", { // <-- fixed URL for backend
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -340,21 +351,30 @@
                         away_from_hq
                     })
                 })
+<<<<<<< HEAD
                 .then(res => {
                     console.log("📥 Response status:", res.status);
                     return res.json();
                 })
                 .then(data => {
                     console.log("📥 Response data:", data);
+=======
+                .then(res => res.json())
+                .then(data => {
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
                     alert(data.message);
                     if (data.message === "Leave applied successfully") {
                         window.location.href = "leave_applications.html";
                     }
                 })
+<<<<<<< HEAD
                 .catch(err => {
                     console.error("❌ Fetch error:", err);
                     alert("Error applying leave: " + err.message);
                 });
+=======
+                .catch(err => console.error(err));
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
         });
     </script>
 

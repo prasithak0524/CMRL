@@ -9,7 +9,11 @@ const PORT = 3000;
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root', // your MySQL username
+<<<<<<< HEAD
     password: '@Prasi05@', // your MySQL password
+=======
+    password: 'root', // your MySQL password
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
     database: 'hr_system' // your database name
 });
 
@@ -53,6 +57,7 @@ app.post('/users', (req, res) => {
         res.json({ message: 'User added', userId: result.insertId });
     });
 });
+<<<<<<< HEAD
 // Get attendance with Present/Absent/Holiday status
 app.get('/attendance', (req, res) => {
     // Optional: get date range from query params, else default
@@ -83,6 +88,8 @@ app.get('/attendance', (req, res) => {
         res.json(results);
     });
 });
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 
 // --- 4. Start server ---
 app.listen(PORT, () => {

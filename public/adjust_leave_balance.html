@@ -185,6 +185,10 @@
         </div>
     </div>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
     <!-- Form Container -->
     <div class="container">
         <div class="card">
@@ -212,6 +216,7 @@
     </div>
 
     <script>
+<<<<<<< HEAD
         document.addEventListener("DOMContentLoaded", async() => {
             const urlParams = new URLSearchParams(window.location.search);
             const empId = urlParams.get("empId");
@@ -362,6 +367,155 @@
             }
         }
     </script>
+=======
+document.addEventListener("DOMContentLoaded", async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const empId = urlParams.get("empId");
+    const leaveType = urlParams.get("type");
+
+    // Set employee ID (use consistent ID)
+    if (empId) {
+        const empIdField = document.getElementById("empId");
+        if (empIdField) {
+            empIdField.value = empId;
+        }
+    }
+
+    // Auto-select leave type if provided
+    if (leaveType) {
+        const leaveMap = {
+            'CL': '1',
+            'EL': '2', 
+            'HL': '3'
+        };
+        const button = document.querySelector(`.leave-btn[data-id="${leaveMap[leaveType]}"]`);
+        if (button) {
+            selectLeave(button);
+        }
+        
+        // Also try to fetch current balance
+        try {
+            const res = await fetch(`/api/leave_balance?empId=${empId}&leave_code=${leaveType}`);
+            if (res.ok) {
+                const data = await res.json();
+                const balanceField = document.getElementById("balance");
+                if (balanceField) {
+                    balanceField.value = data.balance;
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching balance:", err);
+        }
+    }
+
+    // Add event listeners
+    document.querySelector('.submit-btn')?.addEventListener('click', submitForm);
+    document.querySelector('.cancel-btn')?.addEventListener('click', function() {
+        resetForm();
+        window.close();
+    });
+
+    document.getElementById('balance')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') submitForm();
+    });
+
+    document.getElementById('empId')?.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') document.getElementById('balance')?.focus();
+    });
+});
+
+let selectedLeave = "";
+let selectedLeaveId = "";
+
+function selectLeave(button) {
+    document.querySelectorAll(".leave-btn").forEach(btn => btn.classList.remove("active"));
+    button.classList.add("active");
+    selectedLeave = button.innerText.split("(")[0].trim();
+    selectedLeaveId = button.getAttribute("data-id");
+
+    // Auto-fill defaults
+    const balanceField = document.getElementById("balance");
+    if (balanceField) {
+        if (selectedLeaveId === "1") balanceField.value = 12; // CL
+        if (selectedLeaveId === "2") balanceField.value = 15; // EL  
+        if (selectedLeaveId === "3") balanceField.value = 15; // HL
+    }
+}
+
+function resetForm() {
+    const empIdField = document.getElementById("empId");
+    const balanceField = document.getElementById("balance");
+    
+    if (empIdField) empIdField.value = "";
+    if (balanceField) balanceField.value = "";
+    
+    document.querySelectorAll(".leave-btn").forEach(btn => btn.classList.remove("active"));
+    selectedLeave = "";
+    selectedLeaveId = "";
+}
+
+async function submitForm() {
+    const empIdField = document.getElementById("empId");
+    const balanceField = document.getElementById("balance");
+    
+    if (!empIdField || !balanceField) {
+        alert("Form elements not found!");
+        return;
+    }
+
+    const empId = empIdField.value.trim();
+    const balance = balanceField.value.trim();
+
+    if (!empId || !selectedLeaveId || !balance) {
+        alert("Please fill all fields and select a leave type.");
+        return;
+    }
+
+    if (isNaN(balance) || parseFloat(balance) < 0) {
+        alert("Please enter a valid positive number for balance.");
+        return;
+    }
+
+    const leaveData = {
+        EmpId: empId,
+        leave_type_id: selectedLeaveId,
+        leave_desc: selectedLeave,
+        balance: parseFloat(balance)
+    };
+
+    console.log("Sending data:", leaveData);
+
+    try {
+        const response = await fetch("http://localhost:3000/api/adjust_leave_balance", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(leaveData)
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            alert("Leave balance updated successfully!");
+            try {
+                if (window.opener && !window.opener.closed) {
+                    window.opener.postMessage({ action: "refreshLeaveData" }, "*");
+                }
+            } catch (e) {
+                console.warn("Cannot access opener:", e);
+            }
+            window.location.href = "leave_master.html";
+        } else {
+            alert(data.message || "Failed to update leave balance");
+        }
+    } catch (err) {
+        console.error("Error saving leave balance:", err);
+        alert("Error saving leave balance: " + err.message);
+    }
+}
+</script>
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 </body>
 
 </html>

@@ -6,8 +6,11 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Leave Master - HRMS</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+<<<<<<< HEAD
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
     <style>
          :root {
             --bg: #f6f7f9;
@@ -176,13 +179,20 @@
         .leave-desc {
             color: #7b8791
         }
+<<<<<<< HEAD
         
         .add-leave-btn {
+=======
+        .add-leave-btn{
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
             background: #007bff;
             color: #fff;
             padding: 10px;
             border-radius: 8px;
+<<<<<<< HEAD
             text-decoration: none;
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
         }
         
         .balance {
@@ -195,6 +205,7 @@
             text-decoration: none
         }
         
+<<<<<<< HEAD
         .edit-link {
             display: inline-flex;
             align-items: center;
@@ -216,6 +227,8 @@
             padding: 2px 12px;
         }
         
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
         .paper .spacer {
             height: 260px
         }
@@ -256,7 +269,11 @@
 
         <div class="title-row">
             <h2>Leave Master</h2>
+<<<<<<< HEAD
             <a href="adjust_leave_balance.html" class="add-leave-btn" id="addLeaveBtn"> <span style="font-size: larger;">&#43;</span> Add Leave Balance</a>
+=======
+            <a href="adjust_leave_balance.html" class="add-leave-btn" id="addLeaveBtn">Add Leave Balance</a>
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 
         </div>
 
@@ -280,6 +297,7 @@
         <div class="spacer"></div>
     </div>
 
+<<<<<<< HEAD
     <script>
         // Highlight active page in top navigation
         const navLinks = document.querySelectorAll('.top nav a');
@@ -339,14 +357,81 @@
                             hasData = true;
                             const row = document.createElement('tr');
                             row.innerHTML = `
+=======
+<script>
+    // Highlight active page in top navigation
+    const navLinks = document.querySelectorAll('.top nav a');
+    const currentPage = window.location.pathname.split("/").pop();
+
+    navLinks.forEach(link => {
+        if (link.getAttribute('href') === currentPage) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+
+    const role = localStorage.getItem("role") || "employee";
+    const empId = (localStorage.getItem("EmpId") || '').trim();
+    const tableBody = document.getElementById("leaveTableBody");
+
+    // Leave code → name mapping
+    const leaveNameMap = {
+        'CL': 'Casual Leave',
+        'EL': 'Earned Leave',
+        'HL': 'Hospital Leave',
+        'ML': 'Maternity Leave',
+        'PL': 'Paternity Leave',
+        'SL': 'Sick Leave',
+        'VL': 'Vacation Leave'
+    };
+
+    // Fetch leave master list
+    async function refreshLeaveTable() {
+        try {
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;">Loading leave data...</td></tr>';
+
+            const response = await fetch(`/api/leave_master?role=${role}&EmpId=${empId}`);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const data = await response.json();
+            renderTable(data);
+        } catch (err) {
+            console.error('Error fetching leave master:', err);
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:red;">Failed to load leave data. Please check if server is running.</td></tr>';
+        }
+    }
+
+    // Render table
+    function renderTable(data) {
+        tableBody.innerHTML = '';
+
+        if (!data || data.length === 0) {
+            tableBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#666;">No leave data available</td></tr>';
+            return;
+        }
+
+        let hasData = false;
+        data.forEach(leave => {
+            if (role === 'admin' || (leave.EmpId || '').trim() === empId) {
+                hasData = true;
+                const row = document.createElement('tr');
+                row.innerHTML = `
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
                     <td>${leave.EmpId || 'N/A'}</td>
                     <td>${leave.leave_name || leaveNameMap[leave.leave_code] || leave.leave_code}</td>
                     <td>${leave.leave_desc || 'No description'}</td>
                     <td>${leave.balance ?? 0}</td>
                     <td>${role === 'admin'
+<<<<<<< HEAD
     ? `<a href="adjust_leave_balance.html?empId=${encodeURIComponent(leave.EmpId)}&type=${encodeURIComponent(leave.leave_code)}" class="edit-link"><i class='fas fa-pencil-alt'></i> Edit</a>`
     : '-'}</td>
     `;
+=======
+                        ? `<a href="adjust_leave_balance.html?empId=${encodeURIComponent(leave.EmpId)}&type=${encodeURIComponent(leave.leave_code)}">Edit</a>`
+                        : '-'}</td>
+                `;
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
                 tableBody.appendChild(row);
             }
         });
@@ -393,7 +478,11 @@
             refreshLeaveTable();
         }
     });
+<<<<<<< HEAD
     </script>
+=======
+</script>
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 
 </body>
 

@@ -15,7 +15,11 @@ app.use(express.static(path.join(__dirname, "public"))); // serve frontend files
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
+<<<<<<< HEAD
     password: "@Prasi05@",
+=======
+    password:"root",
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
     database: "hr_system"
 });
 
@@ -302,8 +306,11 @@ app.get("/api/leaves", (req, res) => {
 
 // --- Apply Leave Route ---
 app.post("/api/leaves", (req, res) => {
+<<<<<<< HEAD
     console.log("📥 Received leave application request:", req.body);
 
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
     const {
         EmpId,
         leave_type_id,
@@ -314,6 +321,7 @@ app.post("/api/leaves", (req, res) => {
         away_from_hq
     } = req.body;
 
+<<<<<<< HEAD
     console.log("🔍 Parsed fields:", {
         EmpId,
         leave_type_id,
@@ -327,34 +335,54 @@ app.post("/api/leaves", (req, res) => {
     if (!EmpId || !leave_type_id || !start_date || !end_date || !number_of_days || !reason) {
         console.log("❌ Missing required fields");
         return res.status(400).json({ message: "Please fill all required fields." });
+=======
+    if (!EmpId || !leave_type_id || !start_date || !end_date || !number_of_days || !reason) {
+        return res.json({ message: "Please fill all required fields." });
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
     }
 
     // Convert boolean checkbox to integer for MySQL
     const awayFromHQValue = away_from_hq ? 1 : 0;
+<<<<<<< HEAD
     console.log("💾 Away from HQ value:", awayFromHQValue);
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 
     const sql = `
     INSERT INTO leaves 
     (EmpId, leave_type, start_date, end_date, number_of_days, reason, away_from_hq, status)
     VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending')
+<<<<<<< HEAD
     `;
 
     console.log("🛠️ SQL Query:", sql);
     console.log("📋 Query values:", [EmpId, leave_type_id, start_date, end_date, number_of_days, reason, awayFromHQValue]);
+=======
+  `;
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 
     db.query(
         sql, [EmpId, leave_type_id, start_date, end_date, number_of_days, reason, awayFromHQValue],
         (err, result) => {
             if (err) {
                 console.error("❌ SQL Error:", err.sqlMessage || err);
+<<<<<<< HEAD
                 console.error("🔧 Full error:", err);
                 return res.status(500).json({ message: "Failed to apply leave" });
             }
             console.log("✅ Leave applied successfully, ID:", result.insertId);
+=======
+                return res.json({ message: "Failed to apply leave" });
+            }
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
             res.json({ message: "Leave applied successfully" });
         }
     );
 });
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 // PUT /api/leaves/:id
 app.put('/api/leaves/:id', (req, res) => {
     const leaveId = req.params.id;
@@ -675,6 +703,7 @@ app.get("/api/leaves/reports", (req, res) => {
         res.json(results);
     });
 });
+<<<<<<< HEAD
 // Add this to your server.js in the LEAVES section
 app.get("/api/leaves-report", (req, res) => {
     const { employeeId, leaveType, status } = req.query;
@@ -716,6 +745,8 @@ app.get("/api/leaves-report", (req, res) => {
     });
 });
 
+=======
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
 // ================= LEAVE MASTER & BALANCE ROUTES =================
 
 // Fetch leave balance for specific employee + leave type
@@ -757,7 +788,11 @@ app.post("/api/adjust_leave_balance", (req, res) => {
     const leaveCodeMap = {
         1: 'CL', // Casual Leave
         2: 'EL', // Earned Leave
+<<<<<<< HEAD
         3: 'HL' // Hospital Leave
+=======
+        3: 'HL'  // Hospital Leave
+>>>>>>> 2ce0720cd2185cce4b05da6b8e8872741e5c6cf4
     };
 
     const leave_code = leaveCodeMap[leave_type_id] || leave_type_id;
